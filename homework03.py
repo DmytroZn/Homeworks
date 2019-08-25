@@ -10,36 +10,37 @@ import random
 from django.core.validators import URLValidator
 from django.core.exceptions import ValidationError
 
-# Задание 3. URL shortener
+# Task 3. URL shortener
 #
-# Реализуйте сервис для сокращения ссылок. Примеры таких сервисов:
+# Implement a service to shorten links. Examples of such services:
 # http://bit.ly, http://t.co, http://goo.gl
-# Пример ссылки: http://bit.ly/1qJYR0y
+# Link Example: http://bit.ly/1qJYR0y
 #
-# Вам понадобится шаблон с формой для отправки ссылки (файл index.html),
-# и две функции, одна для обработки запросов GET и POST для сабмита URL
-# и отображения результата, и вторая для редиректа с короткого URL на исходный.
-# Для хранения соответствий наших коротких ключей и полных URL мы будем
-# использовать кеш Django, django.core.cache
-# Экземпляр cache уже импортирован, и используется следующим образом.
-# Сохранить значение:
+# You will need a template with a form for sending a link (file index.html ),
+# and two functions, one for processing GET and POST requests for submitting a URL 
+# and displaying the result, and the second for redirecting from a short URL 
+# to the original one.
+# To store the correspondence of our short keys and full URL, 
+# we will use the Django cache, django.core.cache
+# The instance cache is already imported, and is used as follows.
+# Save value:
 #
 #  cache.add(key, value)
 #
-# Извлечь значение:
+# Extract value:
 #
 #  cache.get(key, default_value)
 #
-# Второй аргумент метода get - значение по умолчанию,
-# если ключ не найден в кеше.
+# The second argument to the get method is the default 
+# if the key is not found in the cache.
 #
-# Вы можете запустить сервер для разработки, и посмотреть
-# ответы ваших функций в браузере:
+# You can start the server for development and see 
+# the answers of your functions in the browser:
 #
 # python homework03.py runserver
 
 
-# Конфигурация, не нужно редактировать
+# Configuration, no need to edit
 if not settings.configured:
     settings.configure(
         DEBUG=True,
@@ -52,42 +53,43 @@ if not settings.configured:
 
 
 def random_key():
-    # """
-    # Случайный короткий ключ, состоящий из цифр и букв.
-    # Минимальная длина ключа - 5 символов. Для генерации случайных
-    # последовательностей вы можете воспользоваться библиотекой random.
-    # """
- 	character = string.ascii_letters + string.digits            # we use thit syntax for generation letters ans numbers
- 	return ''.join(random.choice(character) for i in range(5))  # we collect all signs together
+    """
+    A random short key made up of numbers and letters.
+    The minimum key length is 5 characters. 
+    You can use the  library  of random to generate random sequences.
+    """
+    character = string.ascii_letters + string.digits            # we use thit syntax for generation letters ans numbers
+    return ''.join(random.choice(character) for i in range(5))  # we collect all signs together
 
 
 
 def index(request):
-    # """
-    # При запросе методом GET, отдаем HTML страницу (шаблон index.html) с формой
-    # с одним полем url типа text (отредактируйте шаблон, дополните форму).
+    """
+    When prompted by the GET method, we give an HTML page 
+    (index.html template) with a form with one url field of type text 
+    (edit the template, complete the form).
 
-    # При отправке формы методом POST извлекаем url из request.POST и
-    # делаем следующее:
+    When submitting a form using the POST method, we extract the URL from 
+    request.POST and do the following:
 
-    # 1. Проверяем URL. Допускаются следующие схемы: http, https, ftp
+    1. Check the URL. The following schemes are allowed: http, https, ftp
 
-    # Если URL не прошел проверку - отобразите на нашей странице с формой
-    # сообщение о том, какие схемы поддерживаются.
+    If the URL did not pass the test, display on our page with the form 
+    a message about which schemes are supported.
 
-    # Если URL прошел проверку:
+    If the URL passed the check:
 
-    # 2. Создаем случайный короткий ключ, состоящий из цифр и букв
-    # (функция random_key).
+    2. Create a random short key consisting of numbers and letters
+         (random_key function)
 
-    # 3. Сохраняем URL в кеш со сгенерированным ключом:
+    3. Save URL to cache with generated key:
 
-    # cache.add(key, url)
+    cache.add(key, url)
 
-    # 4. Отдаем ту же страницу с формой и дополнительно отображаем на ней
-    # кликабельную короткую ссылку (HTML тег 'a') вида
-    # http://localhost:8000/<key>
-    # """
+    4. We give the same page with the form and additionally display on 
+    it a clickable short link (HTML tag 'a') of the form
+    http://localhost:8000/<key>
+    """
     key, url = None, None
     cache.add(key, url)
 
@@ -113,12 +115,13 @@ def index(request):
 
 
 def redirect_view(request, key):
-    # """
-    # Функция обрабатывает сокращенный URL вида http://localhost:8000/<key>
-    # Ищем ключ в кеше (cache.get). Если ключ не найден,
-    # редиректим на главную страницу (/). Если найден,
-    # редиректим на полный URL, сохраненный под данным ключом.
-    # """
+    """
+    The function processes an abbreviated URL of the form 
+    http://localhost:8000/<key> 
+    We are looking for a key in the cache (cache.get). 
+    If the key is not found, redirect to the main page (/). 
+    If found, redirect to the full URL stored under this key.
+    """
 
     link = cache.get(key)
 
@@ -128,18 +131,10 @@ def redirect_view(request, key):
         return redirect(to='/')
 
 
-def stats(request, key):
-    # """
-    # Статистика кликов на сокращенные ссылки.
-    # В теле ответа функция возращает количество
-    # переходов по данному коду.
-    # """
-    pass
 
 
 urlpatterns = [
     path('', index),
-    path(r'stats/<key>', stats),
     path(r'<key>', redirect_view),
 ]
 
