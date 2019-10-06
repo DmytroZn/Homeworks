@@ -9,11 +9,11 @@
 
 # The function should return the factorial of the argument, the number n.
 def fac(n):
-    f =1
-    i=1
-    while i<n:
-        f*=i
-        i+=1
+    f = 1
+    i = 1
+    while n >= i:
+        f *= i
+        i += 1
     return f
 
 # The greatest common divisor (GCD) for two integers.
